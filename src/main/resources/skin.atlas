@@ -1,0 +1,76 @@
+
+skin.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+ChevyRay - Express(1)
+  rotate: false
+  xy: 1, 462
+  size: 505, 42
+  orig: 505, 42
+  offset: 0, 0
+  index: -1
+WingedMonster_Em
+  rotate: false
+  xy: 1, 443
+  size: 12, 17
+  orig: 12, 17
+  offset: 0, 0
+  index: -1
+button
+  rotate: false
+  xy: 1, 429
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+button active
+  rotate: false
+  xy: 15, 448
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+button hover
+  rotate: false
+  xy: 1, 415
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+button on
+  rotate: false
+  xy: 15, 434
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+button on hover
+  rotate: false
+  xy: 29, 448
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+textfield
+  rotate: false
+  xy: 1, 401
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+textfield hover
+  rotate: false
+  xy: 15, 420
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+textfield on
+  rotate: false
+  xy: 29, 434
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
