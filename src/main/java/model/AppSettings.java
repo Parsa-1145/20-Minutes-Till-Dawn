@@ -30,6 +30,6 @@ public class AppSettings {
         public boolean blackAndWhite = false;
     }
     public static class Debug{
-        public boolean debug = true;
+        public boolean debug = false;
     }
 }

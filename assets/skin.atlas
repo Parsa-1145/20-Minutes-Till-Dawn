@@ -1,0 +1,58 @@
+
+skin.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+white-pixel
+  rotate: false
+  xy: 508, 506
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+ChevyRay - Express
+  rotate: false
+  xy: 1, 342
+  size: 505, 42
+  orig: 505, 42
+  offset: 0, 0
+  index: -1
+ChevyRay - Lantern(1)
+  rotate: false
+  xy: 1, 452
+  size: 505, 55
+  orig: 505, 55
+  offset: 0, 0
+  index: -1
+ChevyRay - Lantern(3)
+  rotate: false
+  xy: 1, 386
+  size: 505, 64
+  orig: 505, 64
+  offset: 0, 0
+  index: -1
+T_Cursor
+  rotate: false
+  xy: 1, 308
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+textField
+  rotate: false
+  xy: 1, 294
+  size: 12, 12
+  split: 4, 4, 4, 4
+  pad: 5, 5, 5, 5
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+textFieldOn
+  rotate: false
+  xy: 35, 328
+  size: 12, 12
+  split: 4, 4, 4, 4
+  orig: 12, 12
+  offset: 0, 0
+  index: -1

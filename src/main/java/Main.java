@@ -16,7 +16,9 @@ public class Main {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setTitle("MyGame");
+        config.setDecorated(true);
         config.setWindowedMode(800, 600);
+        config.setResizable(true);
         config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL32, 3, 2);
         new Lwjgl3Application(App.getInstance(), config);
     }

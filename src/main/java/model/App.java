@@ -2,10 +2,15 @@ package model;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.lwjgl.opengl.GL;
+import view.ColorPalette;
 import view.MainMenuScreen;
 
 public class App extends Game {
@@ -19,11 +24,26 @@ public class App extends Game {
 
     public AppSettings settings = new AppSettings();
     public Skin skin;
+    public AssetManager assetManager;
     private ScreenViewport viewport;
 
     @Override
     public void create() {
-        skin = new Skin(Gdx.files.internal("src/main/resources/skin.json"));
+        skin = new Skin(Gdx.files.internal("assets/skin.json"));
+
+        //i hate smoothened text. lets sharpen it
+        ObjectMap<String, BitmapFont> fonts = skin.getAll(BitmapFont.class);
+        for (ObjectMap.Entry<String, BitmapFont> entry : fonts) {
+            BitmapFont font = (BitmapFont) entry.value;
+            font.getRegion().getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+        }
+        assetManager = new AssetManager();
+        assetManager.load("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class);
+        assetManager.load("assets/Images/Texture2D/T_20Logo.png", Texture.class);
+        while(!assetManager.update()){
+
+        }
         viewport = new ScreenViewport();
 
         setScreen(new MainMenuScreen(viewport));
@@ -31,19 +51,21 @@ public class App extends Game {
 
     @Override
     public void resize(int width, int height) {
+        screen.resize(width, height);
         this.viewport.update(width, height, true);
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(ColorPalette.BACKGROUND.r, ColorPalette.BACKGROUND.g,
+                            ColorPalette.BACKGROUND.b, ColorPalette.BACKGROUND.a);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
         screen.render(Gdx.graphics.getDeltaTime());
     }
 
     @Override
     public void dispose() {
-        screen.dispose();
+
     }
 
     @Override

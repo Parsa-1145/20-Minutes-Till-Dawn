@@ -1,0 +1,87 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"ChevyRay_-_Express": {
+		"file": "ChevyRay - Express.fnt",
+		"scaledSize": 24,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"ChevyRay_-_Lantern1": {
+		"file": "ChevyRay - Lantern(1).fnt",
+		"scaledSize": 20,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"ChevyRay_-_Lantern3": {
+		"file": "ChevyRay - Lantern(3).fnt",
+		"scaledSize": 30,
+		"markupEnabled": false,
+		"flip": false
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"RGBA_0_0_0_255": {
+		"r": 0,
+		"g": 0,
+		"b": 0,
+		"a": 1
+	},
+	"RGBA_255_255_255_255": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	},
+	"RGBA_255_75_98_148": {
+		"r": 1,
+		"g": 0.29411766,
+		"b": 0.38431373,
+		"a": 0.58426964
+	},
+	"RGBA_255_75_98_255": {
+		"r": 1,
+		"g": 0.29411766,
+		"b": 0.38431373,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
+	"textCurser": {
+		"name": "white-pixel",
+		"color": "RGBA_255_75_98_255",
+		"minWidth": 1,
+		"minHeight": 9
+	},
+	"textSelection": {
+		"name": "white-pixel",
+		"color": "RGBA_255_75_98_148"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+	"default": {
+		"font": "ChevyRay_-_Lantern1",
+		"fontColor": "RGBA_255_255_255_255"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+	"default": {
+		"font": "ChevyRay_-_Lantern3"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+	"default": {
+		"font": "ChevyRay_-_Lantern1",
+		"fontColor": "RGBA_255_255_255_255",
+		"focusedFontColor": "RGBA_255_255_255_255",
+		"background": "textField",
+		"focusedBackground": "textFieldOn",
+		"cursor": "textCurser",
+		"selection": "textSelection"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}
