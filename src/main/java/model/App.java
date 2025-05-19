@@ -25,7 +25,6 @@ public class App extends Game {
     public AppSettings settings = new AppSettings();
     public Skin skin;
     public AssetManager assetManager;
-    private ScreenViewport viewport;
 
     public AccountManager accountManager = new AccountManager();
 
@@ -41,20 +40,23 @@ public class App extends Game {
 
         }
         assetManager = new AssetManager();
-        assetManager.load("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class);
-        assetManager.load("assets/Images/Texture2D/T_20Logo.png", Texture.class);
+        assetManager.load(ConstantNames.LEAVSBACKGROUND, Texture.class);
+        assetManager.load(ConstantNames.LOGO, Texture.class);
+        assetManager.load(ConstantNames.SHANA_ANIMATIONS, Texture.class);
+        assetManager.load(ConstantNames.GRASS_TILE, Texture.class);
+        assetManager.load(ConstantNames.REVOLVER_SPRITE, Texture.class);
+
+
         while(!assetManager.update()){
 
         }
-        viewport = new ScreenViewport();
 
-        setScreen(new MainMenuScreen(viewport));
+        setScreen(new MainMenuScreen());
     }
 
     @Override
     public void resize(int width, int height) {
         screen.resize(width, height);
-        this.viewport.update(width, height, true);
     }
 
     @Override

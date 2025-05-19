@@ -31,8 +31,8 @@ public class SignUpMenuScreen implements Screen {
 
     private final SignUpMenuController controller = new SignUpMenuController();
 
-    public SignUpMenuScreen(ScreenViewport viewport){
-        this.stage = new Stage(viewport);
+    public SignUpMenuScreen(){
+        stage = new Stage(new ScreenViewport());
 
         rootTable = new Table();
         rootTable.setFillParent(true);
@@ -83,7 +83,7 @@ public class SignUpMenuScreen implements Screen {
         backBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new MainMenuScreen(viewport));
+                controller.changeScreen(new MainMenuScreen());
             }
         });
 
@@ -136,7 +136,7 @@ public class SignUpMenuScreen implements Screen {
                         ),
                         Actions.delay(0.5f),
                         Actions.run(()->{
-                            controller.changeScreen(new MainMenuScreen(viewport));
+                            controller.changeScreen(new MainMenuScreen());
                         })
                 ));
             }
@@ -156,7 +156,7 @@ public class SignUpMenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -176,6 +176,6 @@ public class SignUpMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import controller.MainMenuController;
 import model.App;
+import model.ConstantNames;
 import view.widgets.MainMenuButton;
 
 public class MainMenuScreen implements Screen {
@@ -31,13 +33,13 @@ public class MainMenuScreen implements Screen {
 
     private final MainMenuController controller = new MainMenuController();
 
-    public MainMenuScreen(ScreenViewport viewport){
-        stage = new Stage(viewport);
+    public MainMenuScreen(){
+        stage = new Stage(new ScreenViewport());
 
-        backgroundLeft = new Image(App.getInstance().assetManager.get("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class));
+        backgroundLeft = new Image(App.getInstance().assetManager.get(ConstantNames.LEAVSBACKGROUND, Texture.class));
         {
             TextureRegion region = new TextureRegion(App.getInstance().assetManager
-                    .get("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class));
+                    .get(ConstantNames.LEAVSBACKGROUND, Texture.class));
             region.flip(true, false);
             region.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
             backgroundRight = new Image(region);
@@ -49,7 +51,7 @@ public class MainMenuScreen implements Screen {
         stage.addActor(backgroundLeft);
         stage.addActor(backgroundRight);
 
-        updateMainBox(viewport);
+        updateMainBox();
     }
 
     @Override
@@ -65,10 +67,10 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void resize(int x, int y) {
+        stage.getViewport().update(x, y, true);
         backgroundLeft.setScale(y / backgroundLeft.getHeight());
         backgroundRight.setScale(y / backgroundRight.getHeight());
         backgroundRight.setPosition(x - backgroundRight.getScaleX() * backgroundRight.getWidth(), 0);
-        stage.getViewport().update(x, y);
     }
 
     @Override
@@ -88,11 +90,17 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        for(Actor a : stage.getActors()){
+            a.remove();
+        }
+        stage.dispose();
     }
 
-    private void updateMainBox(ScreenViewport viewport){
-        if(rootTable!= null) rootTable.remove();
-        stage.clear();
+    private void updateMainBox(){
+        if(rootTable!= null){
+            rootTable.remove();
+            rootTable.clear();
+        }
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.setDebug(App.getInstance().settings.debugSettings.debug);
@@ -108,7 +116,7 @@ public class MainMenuScreen implements Screen {
         exitBtn = new MainMenuButton("exit", App.getInstance().skin);
 
 
-        logoImage = new Image(App.getInstance().assetManager.get("assets/Images/Texture2D/T_20Logo.png", Texture.class));
+        logoImage = new Image(App.getInstance().assetManager.get(ConstantNames.LOGO, Texture.class));
         logoImage.setScaling(Scaling.fill);
 
         mainBox.add(logoImage).size(logoImage.getWidth() * 2, logoImage.getHeight() * 2).row();
@@ -130,7 +138,6 @@ public class MainMenuScreen implements Screen {
 
         rootTable.add(mainBox);
 
-
         stage.addActor(rootTable);
 
         exitBtn.addListener(new ClickListener(){
@@ -143,13 +150,13 @@ public class MainMenuScreen implements Screen {
         signUpBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new SignUpMenuScreen(viewport));
+                controller.changeScreen(new SignUpMenuScreen());
             }
         });
         loginBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new LoginMenuScreen(viewport));
+                controller.changeScreen(new LoginMenuScreen());
             }
         });
 
@@ -157,8 +164,16 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 controller.logout();
-                updateMainBox(viewport);
+                updateMainBox();
+            }
+        });
+
+        playBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.changeScreen(new GameScreen());
             }
         });
     }
+
 }

@@ -30,8 +30,8 @@ public class LoginMenuScreen implements Screen {
 
     LoginMenuController controller = new LoginMenuController();
 
-    public LoginMenuScreen(ScreenViewport viewport){
-        this.stage = new Stage(viewport);
+    public LoginMenuScreen(){
+        stage = new Stage(new ScreenViewport());
 
         this.rootTable = new Table();
         dialogueBox = new Table();
@@ -65,7 +65,7 @@ public class LoginMenuScreen implements Screen {
         backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new MainMenuScreen(viewport));
+                controller.changeScreen(new MainMenuScreen());
             }
         });
 
@@ -127,7 +127,7 @@ public class LoginMenuScreen implements Screen {
                         ),
                         Actions.delay(0.5f),
                         Actions.run(()->{
-                            controller.changeScreen(new MainMenuScreen(viewport));
+                            controller.changeScreen(new MainMenuScreen());
                         })
                 ));
             }
@@ -147,7 +147,7 @@ public class LoginMenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
