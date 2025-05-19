@@ -21,6 +21,7 @@ public class MainMenuButton extends TextButton {
         getLabel().setColor(ColorPalette.RED);
         setTransform(true);
         setOrigin(Align.center);
+        getLabel().setFontScale(1.5f);
 
         this.addListener(new ClickListener(){
             @Override

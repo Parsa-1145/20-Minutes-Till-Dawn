@@ -1,46 +1,71 @@
 package view.widgets;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import view.ColorPalette;
 
 public class SignUpTextFields extends WidgetGroup {
     private final TextField textField;
     private final Label warningLabel;
-//    private final Label inputLabel;
+    private final Container<Label> labelContainer;
+    private boolean valid = true;
 
     public SignUpTextFields(Skin skin) {
         this.textField = new TextField("text",skin);
         this.warningLabel = new Label("text", skin);
+        labelContainer = new Container<>(warningLabel);
 
         warningLabel.setVisible(false);
-        warningLabel.setWrap(true);
+        labelContainer.setWidth(getPrefWidth());
+        labelContainer.setTransform(true);
+        labelContainer.setHeight(warningLabel.getHeight());
+        labelContainer.fill();
+        warningLabel.setFontScale(0.9f);
+        warningLabel.setColor(ColorPalette.WARNING);
 
+        addActor(labelContainer);
         addActor(textField);
-        addActor(warningLabel);
 
         textField.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if(textField.getText().length() > 10){
-                    warningLabel.setText(textField.getText());
-                    if(!warningLabel.isVisible()){
-                        warningLabel.addAction(Actions.sequence(
-                                Actions.color(ColorPalette.BACKGROUND, 1)));
-                    }
+                    warningLabel.setText("too long dude");
+
+                    boolean isNew = valid;
+                    valid = false;
+
                     warningLabel.setVisible(true);
+                    invalidate();
+                    invalidateHierarchy();
+                    if(isNew){
+                        labelContainer.addAction(Actions.sequence(
+                                Actions.moveBy(0, labelContainer.getHeight(), 0),
+                                Actions.moveBy(0, -labelContainer.getHeight(), 0.6f, Interpolation.swingOut)
+                        ));
+                        warningLabel.addAction(Actions.fadeIn(0.6f,  Interpolation.smoother));
+                    }
                 }else{
-                    warningLabel.setVisible(false);
+                    boolean isNew = !valid;
+                    valid = true;
+                    if(isNew){
+                        invalidate();
+                        invalidateHierarchy();
+                        labelContainer.addAction(Actions.sequence(
+                                Actions.moveBy(0, labelContainer.getHeight(), 0.6f, Interpolation.swingIn),
+                                Actions.moveBy(0, -labelContainer.getHeight())
+                        ));
+                        warningLabel.addAction(Actions.sequence(
+                                Actions.fadeOut(0.6f,  Interpolation.smoother),
+                                Actions.visible(false)
+                        ));
+                    }
                 }
 
-                invalidate();
-                invalidateHierarchy();
             }
         });
     }
@@ -55,20 +80,15 @@ public class SignUpTextFields extends WidgetGroup {
 
         // 2) Layout warningLabel below TextField if visible
         if (warningLabel.isVisible()) {
+            labelContainer.setWidth(width);
             // wrap at our width…
-            warningLabel.setWrap(true);
             warningLabel.setWidth(width);
-            // …then compute the height needed for that wrap
-            float labelHeight = warningLabel.getPrefHeight();
-            warningLabel.setHeight(labelHeight);
-
-            // place it immediately below the textField
-            warningLabel.setPosition(
-                    0,
-                    getHeight() - textField.getHeight() - warningLabel.getHeight()
-            );
+            warningLabel.setWrap(true);
+            warningLabel.setX(3);
+            warningLabel.setHeight(warningLabel.getPrefHeight());
+            labelContainer.setHeight(warningLabel.getPrefHeight());
         } else {
-            warningLabel.setSize(0, 0);
+//            warningLabel.setSize(0, 0);
         }
     }
     @Override

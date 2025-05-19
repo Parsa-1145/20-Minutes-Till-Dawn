@@ -14,7 +14,7 @@
 	},
 	"ChevyRay_-_Lantern3": {
 		"file": "ChevyRay - Lantern(3).fnt",
-		"scaledSize": 30,
+		"scaledSize": -1,
 		"markupEnabled": false,
 		"flip": false
 	}
@@ -59,7 +59,7 @@
 },
 "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
 	"default": {
-		"font": "ChevyRay_-_Lantern1",
+		"font": "ChevyRay_-_Lantern3",
 		"fontColor": "RGBA_255_255_255_255"
 	}
 },
@@ -70,7 +70,7 @@
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
 	"default": {
-		"font": "ChevyRay_-_Lantern1",
+		"font": "ChevyRay_-_Lantern3",
 		"fontColor": "RGBA_255_255_255_255",
 		"focusedFontColor": "RGBA_255_255_255_255",
 		"background": "textField",
