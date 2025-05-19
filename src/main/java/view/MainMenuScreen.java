@@ -16,40 +16,25 @@ import model.App;
 import view.widgets.MainMenuButton;
 
 public class MainMenuScreen implements Screen {
-    private final Stage      stage;
-
-    private final Table      rootTable;
-    private final MainMenuButton playBtn;
-    private final MainMenuButton loginBtn;
-    private final MainMenuButton signUpBtn;
-    private final MainMenuButton settingsBtn;
-    private final MainMenuButton profileMenuBtn;
-    private final MainMenuButton logoutBtn;
-    private final MainMenuButton exitBtn;
-    private final Image backgroundLeft;
-    private final Image backgroundRight;
-    private final Image logoImage;
+    private Stage stage;
+    private Table rootTable;
+    private MainMenuButton playBtn;
+    private MainMenuButton loginBtn;
+    private MainMenuButton signUpBtn;
+    private MainMenuButton settingsBtn;
+    private MainMenuButton profileMenuBtn;
+    private MainMenuButton logoutBtn;
+    private MainMenuButton exitBtn;
+    private Image backgroundLeft;
+    private Image backgroundRight;
+    private Image logoImage;
 
     private final MainMenuController controller = new MainMenuController();
 
     public MainMenuScreen(ScreenViewport viewport){
         stage = new Stage(viewport);
 
-        rootTable = new Table();
-        rootTable.setFillParent(true);
-        rootTable.setDebug(App.getInstance().settings.debugSettings.debug);
-
-        Table mainBox = new Table();
-
-        playBtn = new MainMenuButton("play", App.getInstance().skin);
-        loginBtn = new MainMenuButton("login", App.getInstance().skin);
-        signUpBtn = new MainMenuButton("sign up", App.getInstance().skin);
-        settingsBtn = new MainMenuButton("settings", App.getInstance().skin);
-        profileMenuBtn = new MainMenuButton("your profile", App.getInstance().skin);
-        logoutBtn = new MainMenuButton("logout", App.getInstance().skin);
-        exitBtn = new MainMenuButton("exit", App.getInstance().skin);
         backgroundLeft = new Image(App.getInstance().assetManager.get("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class));
-        logoImage = new Image(App.getInstance().assetManager.get("assets/Images/Texture2D/T_20Logo.png", Texture.class));
         {
             TextureRegion region = new TextureRegion(App.getInstance().assetManager
                     .get("assets/Images/Texture2D/T_TitleLeaves.png", Texture.class));
@@ -58,47 +43,13 @@ public class MainMenuScreen implements Screen {
             backgroundRight = new Image(region);
         }
 
-        logoImage.setScaling(Scaling.fill);
-
-        mainBox.add(logoImage).size(logoImage.getWidth() * 2, logoImage.getHeight() * 2).row();
-        mainBox.defaults().padBottom(5);
-        mainBox.add(playBtn);
-        mainBox.row();
-        mainBox.add(settingsBtn);
-        mainBox.row();
-        mainBox.add(signUpBtn).row();
-        mainBox.add(loginBtn).row();
-        //mainBox.add(logoutBtn);
-        mainBox.row();
-        //mainBox.add(profileMenuBtn);
-        mainBox.row();
-        mainBox.add(exitBtn);
-
-        logoutBtn.setVisible(false);
-        profileMenuBtn.setVisible(false);
-
-        rootTable.add(mainBox);
-
         backgroundLeft.setScaling(Scaling.fit);
         backgroundRight.setScaling(Scaling.fit);
+
         stage.addActor(backgroundLeft);
         stage.addActor(backgroundRight);
 
-        stage.addActor(rootTable);
-
-        exitBtn.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                controller.exit();
-            }
-        });
-
-        signUpBtn.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new SignUpMenuScreen(viewport));
-            }
-        });
+        updateMainBox(viewport);
     }
 
     @Override
@@ -137,5 +88,77 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+    }
+
+    private void updateMainBox(ScreenViewport viewport){
+        if(rootTable!= null) rootTable.remove();
+        stage.clear();
+        rootTable = new Table();
+        rootTable.setFillParent(true);
+        rootTable.setDebug(App.getInstance().settings.debugSettings.debug);
+
+        Table mainBox = new Table();
+
+        playBtn = new MainMenuButton("play", App.getInstance().skin);
+        loginBtn = new MainMenuButton("login", App.getInstance().skin);
+        signUpBtn = new MainMenuButton("sign up", App.getInstance().skin);
+        settingsBtn = new MainMenuButton("settings", App.getInstance().skin);
+        profileMenuBtn = new MainMenuButton("your profile", App.getInstance().skin);
+        logoutBtn = new MainMenuButton("logout", App.getInstance().skin);
+        exitBtn = new MainMenuButton("exit", App.getInstance().skin);
+
+
+        logoImage = new Image(App.getInstance().assetManager.get("assets/Images/Texture2D/T_20Logo.png", Texture.class));
+        logoImage.setScaling(Scaling.fill);
+
+        mainBox.add(logoImage).size(logoImage.getWidth() * 2, logoImage.getHeight() * 2).row();
+        mainBox.defaults().padBottom(5);
+        mainBox.add(playBtn);
+        mainBox.row();
+        mainBox.add(settingsBtn);
+        mainBox.row();
+        if(App.getInstance().accountManager.getCurrentAccount() != null){
+            mainBox.add(logoutBtn).row();
+            mainBox.add(profileMenuBtn).row();
+        }else{
+            mainBox.add(signUpBtn).row();
+            mainBox.add(loginBtn).row();
+        }
+        mainBox.row();
+        mainBox.row();
+        mainBox.add(exitBtn);
+
+        rootTable.add(mainBox);
+
+
+        stage.addActor(rootTable);
+
+        exitBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.exit();
+            }
+        });
+
+        signUpBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.changeScreen(new SignUpMenuScreen(viewport));
+            }
+        });
+        loginBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.changeScreen(new LoginMenuScreen(viewport));
+            }
+        });
+
+        logoutBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.logout();
+                updateMainBox(viewport);
+            }
+        });
     }
 }

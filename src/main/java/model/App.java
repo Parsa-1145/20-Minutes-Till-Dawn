@@ -27,6 +27,8 @@ public class App extends Game {
     public AssetManager assetManager;
     private ScreenViewport viewport;
 
+    public AccountManager accountManager = new AccountManager();
+
     @Override
     public void create() {
         skin = new Skin(Gdx.files.internal("assets/skin.json"));
@@ -72,4 +74,5 @@ public class App extends Game {
     public void pause() {
         screen.pause();
     }
+
 }

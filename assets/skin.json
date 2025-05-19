@@ -2,7 +2,7 @@
 "com.badlogic.gdx.graphics.g2d.BitmapFont": {
 	"ChevyRay_-_Express": {
 		"file": "ChevyRay - Express.fnt",
-		"scaledSize": 24,
+		"scaledSize": -1,
 		"markupEnabled": false,
 		"flip": false
 	},
@@ -61,6 +61,9 @@
 	"default": {
 		"font": "ChevyRay_-_Lantern3",
 		"fontColor": "RGBA_255_255_255_255"
+	},
+	"warning": {
+		"font": "ChevyRay_-_Express"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {

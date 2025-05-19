@@ -3,26 +3,6 @@ atlasData: {
 	atlasCurrent: true
 	drawables: [
 		{
-			file: "/home/parsa/Projects/University/AP/20MinutesTillDawn/assets/Images/Texture2D/T_Cursor.png"
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: T_Cursor
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
 			file: null
 			bgColor: {
 				r: 0
@@ -215,7 +195,7 @@ jsonData: {
 			name: ChevyRay_-_Express
 			flip: false
 			markupEnabled: false
-			scaling: 24
+			scaling: -1
 			file: "/home/parsa/Projects/University/AP/20MinutesTillDawn/assets/Fonts/ChevyRay - Express.fnt"
 		}
 		{
@@ -1578,6 +1558,33 @@ jsonData: {
 					}
 				}
 				deletable: false
+				parent: null
+			}
+			{
+				class: com.ray3k.skincomposer.data.StyleData
+				name: warning
+				clazz: com.badlogic.gdx.scenes.scene2d.ui.Label
+				properties: {
+					font: {
+						type: com.badlogic.gdx.graphics.g2d.BitmapFont
+						name: font
+						optional: false
+						value: ChevyRay_-_Express
+					}
+					fontColor: {
+						type: com.badlogic.gdx.graphics.Color
+						name: fontColor
+						optional: true
+						value: null
+					}
+					background: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: background
+						optional: true
+						value: null
+					}
+				}
+				deletable: true
 				parent: null
 			}
 		]

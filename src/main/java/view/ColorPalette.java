@@ -7,4 +7,5 @@ public abstract class ColorPalette {
     public static final Color RED = new Color(255/255f, 75/255f, 99/255f, 1);
     public static final Color WHITE = new Color(1, 1, 1, 1);
     public static final Color WARNING = new Color(211 / 255f, 97 / 255f, 53 / 255f, 1);
+    public static final Color GREEN = new Color(17 / 255f, 157 / 255f, 164 / 255f, 1);
 }

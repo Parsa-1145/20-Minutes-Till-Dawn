@@ -32,9 +32,11 @@ public class MainMenuButton extends TextButton {
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                getLabel().addAction(Actions.color(ColorPalette.RED, 0.8f, Interpolation.sineOut));
+                if(pointer == -1){
+                    getLabel().addAction(Actions.color(ColorPalette.RED, 0.8f, Interpolation.sineOut));
 //                addAction();
-                if(scaleAnimation)addAction(Actions.scaleTo(1f, 1f, 0.8f, Interpolation.sineOut));
+                    if(scaleAnimation)addAction(Actions.scaleTo(1f, 1f, 0.8f, Interpolation.sineOut));
+                }
             }
 
             @Override
@@ -56,4 +58,5 @@ public class MainMenuButton extends TextButton {
         this.scaleAnimation = scaleAnimation;
         return this;
     }
+
 }
