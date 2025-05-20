@@ -16,14 +16,23 @@ import java.util.ArrayList;
 public class Game {
     private Player player;
     private OrthographicCamera camera;
+    public static ShapeRenderer shapeRenderer;
     private Texture groundTexture;
     static Vector3 pointerLocation = new Vector3();
 
-    private ArrayList<Entity> entities = new ArrayList<>();
+    public EntityList entities = new EntityList();
+    public ArrayList<Entity> entitiesToAdd = new ArrayList<>();
+    public ArrayList<Entity> entitiesToDelete = new ArrayList<>();
+
+
+    public static Game activeGame;
 
     public Game(){
+        activeGame = this;
+
         player = new Player(Character.SHANA);
         camera = new OrthographicCamera();
+        shapeRenderer = new ShapeRenderer();
 
         camera.setToOrtho(false, Gdx.graphics.getWidth() / 3.2f, Gdx.graphics.getHeight() / 3.2f);
 
@@ -34,6 +43,7 @@ public class Game {
     public void render(SpriteBatch batch){
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
 
         int tileWidth = groundTexture.getWidth();
         int tileHeight = groundTexture.getHeight();
@@ -55,9 +65,29 @@ public class Game {
         }
 
         player.render(batch);
+        batch.end();
+
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        for(Projectile e : entities.getEntitiesOfType(Projectile.class)){
+            e.render(shapeRenderer);
+        }
+        shapeRenderer.end();
     }
     public void update(float delta){
-        player.update(delta);
+        for (Entity e : entities){
+            e.update(delta);
+        }
+        for(Entity e : entitiesToAdd){
+            entities.add(e);
+            e.update(delta);
+        }
+        for (Entity e : entitiesToDelete){
+            entities.remove(e);
+        }
+
+        entitiesToAdd.clear();
+        entitiesToDelete.clear();
 
         camera.position.set(player.getPosition().x + player.getSize().x / 2,
                 player.getPosition().y + player.getSize().y / 2, camera.position.z);

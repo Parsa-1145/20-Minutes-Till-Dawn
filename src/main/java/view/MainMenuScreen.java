@@ -4,9 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -96,6 +99,29 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
     }
 
+    public void transitionOut(Screen next){
+        rootTable.addAction(
+                Actions.sequence(
+                        Actions.fadeOut(1.8f, Interpolation.pow2Out),
+                        Actions.run(()->{
+                            controller.changeScreen(next);
+                        })
+                )
+        );
+        backgroundRight.addAction(
+                Actions.parallel(
+                    Actions.moveBy(backgroundRight.getWidth(), 0, 2f, Interpolation.exp5),
+                    Actions.fadeOut(1.6f, Interpolation.exp5)
+                )
+        );
+        backgroundLeft.addAction(
+                Actions.parallel(
+                        Actions.moveBy(-backgroundLeft.getWidth(), 0, 2f, Interpolation.exp5),
+                        Actions.fadeOut(1.6f, Interpolation.exp5)
+                )
+        );
+    }
+
     private void updateMainBox(){
         if(rootTable!= null){
             rootTable.remove();
@@ -150,13 +176,13 @@ public class MainMenuScreen implements Screen {
         signUpBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new SignUpMenuScreen());
+                transitionOut(new SignUpMenuScreen());
             }
         });
         loginBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new LoginMenuScreen());
+                transitionOut(new LoginMenuScreen());
             }
         });
 
@@ -171,7 +197,7 @@ public class MainMenuScreen implements Screen {
         playBtn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                controller.changeScreen(new GameScreen());
+                transitionOut(new GameScreen());
             }
         });
     }

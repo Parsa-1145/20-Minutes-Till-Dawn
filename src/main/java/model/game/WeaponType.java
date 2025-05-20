@@ -7,7 +7,7 @@ import model.App;
 import model.ConstantNames;
 
 public enum WeaponType {
-    REVOLVER(App.getInstance().assetManager.get(ConstantNames.REVOLVER_SPRITE), new Vector2(12, 8), new Vector2(0, 9)),
+    REVOLVER(App.getInstance().assetManager.get(ConstantNames.REVOLVER_SPRITE), new Vector2(12, 9), new Vector2(0, 9)),
     ;
     public final TextureRegion texture;
     public final Vector2 muzzleLocation;

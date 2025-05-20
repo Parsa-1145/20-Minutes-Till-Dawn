@@ -35,7 +35,6 @@ public class Player extends Entity{
                 frame.getRegionWidth(), frame.getRegionHeight(), velocity.x < 0 ? -1 : 1, 1, 0);
 
         weapon.render(batch);
-
     }
 
     @Override

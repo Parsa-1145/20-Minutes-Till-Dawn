@@ -1,14 +1,23 @@
 package model.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
     protected boolean deleted = false;
 
-    public abstract void render(SpriteBatch batch);
+    public Entity(){
+        Game.activeGame.entitiesToAdd.add(this);
+    }
+
     public abstract void update(float delta);
+    public void render(SpriteBatch batch) {};
+    public void render(ShapeRenderer shapeRenderer) {};
     public void delete(){
-        this.deleted = true;
+        if(Game.activeGame.entitiesToDelete.contains(this)){
+            throw new RuntimeException("why would you delete something that is deleted you scum?(" + this.getClass().getSimpleName() + ")");
+        }
+        Game.activeGame.entitiesToDelete.add(this);
     }
 }
