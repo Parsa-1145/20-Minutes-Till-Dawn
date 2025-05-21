@@ -19,9 +19,9 @@ public enum Character {
 
     Character(Texture spriteSheet, String name) {
         this.name = name;
-        slowWalkAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 2, 0.1f, true);
-        idleAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 0, 0.1f, true);
-        walkAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 1, 0.1f, true);
+        slowWalkAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 2, 0.1f, Animation.PlayMode.LOOP);
+        idleAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 0, 0.1f, Animation.PlayMode.LOOP);
+        walkAnimation = TextureUtilities.getAnimation(spriteSheet, 10, 10, 1, 0.1f, Animation.PlayMode.LOOP);
 
     }
 }

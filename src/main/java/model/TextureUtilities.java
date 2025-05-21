@@ -14,13 +14,13 @@ public class TextureUtilities {
                                                         , int rowFramse
                                                         , int rowIndex
                                                         , float frameDuration
-                                                        , boolean loop){
+                                                        , Animation.PlayMode mode){
         TextureRegion[][] tmp = TextureRegion.split(
                 texture,
                 texture.getWidth()  / colFramse,
                 texture.getHeight() / rowFramse
         );
-        Array<TextureRegion> frames = new com.badlogic.gdx.utils.Array<>();
+        Array<TextureRegion> frames = new Array<TextureRegion>();
 
         if(rowIndex >= tmp.length){
             throw new RuntimeException("row index (" + rowIndex + ")is larger than animation columns in " +
@@ -32,10 +32,12 @@ public class TextureUtilities {
             }
         }
 
-        return new Animation<>(frameDuration, frames, loop ? Animation.PlayMode.LOOP : Animation.PlayMode.NORMAL);
+        return new Animation<>(frameDuration, frames, mode);
     }
     public static boolean isRegionEmpty(TextureRegion region){
-        region.getTexture().getTextureData().prepare();
+        if(!region.getTexture().getTextureData().isPrepared()){
+            region.getTexture().getTextureData().prepare();
+        }
         Pixmap pixmap = region.getTexture().getTextureData().consumePixmap();
         int x = region.getRegionX();
         int y = region.getRegionY();
@@ -47,12 +49,39 @@ public class TextureUtilities {
                 int pixel = pixmap.getPixel(i, j);
                 if ((pixel & 0x000000ff) != 0) {
                     pixmap.dispose();
-                    return false; // Non-transparent pixel found
+                    return false;
                 }
             }
         }
 
         pixmap.dispose();
-        return true; // All pixels transparent
+        return true;
+    }
+
+    public static byte[][] getTransparencyMask(TextureRegion region){
+        if(!region.getTexture().getTextureData().isPrepared()){
+            region.getTexture().getTextureData().prepare();
+        }
+        Pixmap pixmap = region.getTexture().getTextureData().consumePixmap();
+        int x = region.getRegionX();
+        int y = region.getRegionY();
+        int width = region.getRegionWidth();
+        int height = region.getRegionHeight();
+
+        byte[][] mask = new byte[region.getRegionHeight()][region.getRegionWidth()];
+
+        for (int i = x; i < x + width; i++) {
+            for (int j = y; j < y + height; j++) {
+                int pixel = pixmap.getPixel(i, j);
+                if ((pixel & 0x000000ff) == 0) {
+                    mask[j - y][i - x] = 0;
+                }else{
+                    mask[j - y][i - x] = 1;
+                }
+            }
+        }
+
+        pixmap.dispose();
+        return mask;
     }
 }

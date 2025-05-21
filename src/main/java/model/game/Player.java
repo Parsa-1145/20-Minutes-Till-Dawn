@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +16,8 @@ public class Player extends Entity{
     private Vector2 velocity;
     private Vector2 size;
     private Vector2 position;
+    private Vector2 center;
+    private Vector2 handPos;
     private float animState = 0;
     private Weapon weapon;
     private float speed = 64;
@@ -23,18 +26,31 @@ public class Player extends Entity{
         this.character = character;
         position = new Vector2(0, 0);
         velocity = new Vector2();
+        center = new Vector2();
         size = new Vector2();
         weapon = new Weapon(WeaponType.REVOLVER);
+        handPos = new Vector2();
+        velocity.set(0, 0);
+        currentAnim = character.idleAnimation;
     }
 
     @Override
     public void render(SpriteBatch batch) {
         TextureRegion frame = currentAnim.getKeyFrame(animState);
         size.set(frame.getRegionWidth(), frame.getRegionHeight());
-        batch.draw(frame, position.x, position.y, frame.getRegionWidth() / 2f, frame.getRegionHeight()/2f,
+        batch.draw(frame, position.x, position.y, size.x/2, size.y/2,
                 frame.getRegionWidth(), frame.getRegionHeight(), velocity.x < 0 ? -1 : 1, 1, 0);
 
         weapon.render(batch);
+    }
+
+    @Override
+    public void render(ShapeRenderer shapeRenderer) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.line(center, center.cpy().add(handPos));
+        shapeRenderer.end();
+
+        weapon.render(shapeRenderer);
     }
 
     @Override
@@ -67,12 +83,15 @@ public class Player extends Entity{
         }
 
         this.position.add(velocity.cpy().scl(delta));
+
+        center.set(position.x + size.x / 2, position.y + size.y / 2);
+
         animState += delta;
 
-        weapon.getPosition().set(position.x + size.x/2f - weapon.getOrigin().x, position.y + size.y/2f - weapon.getOrigin().y);
+        handPos = (new Vector2(Game.pointerLocation.x, Game.pointerLocation.y)).sub(center).setLength(5);
 
-        Vector2 weaponDir = new Vector2(Game.pointerLocation.x, Game.pointerLocation.y).sub(weapon.getPosition().x, weapon.getPosition().y);
-        weapon.setAngle(weaponDir.angleDeg());
+        weapon.getPosition().set(center).add(handPos).sub(weapon.getOrigin());
+        weapon.setAngle(handPos.angleDeg());
     }
 
     public Vector2 getPosition() {
@@ -97,5 +116,9 @@ public class Player extends Entity{
 
     public void setSize(Vector2 size) {
         this.size = size;
+    }
+
+    public Vector2 getCenter() {
+        return center;
     }
 }

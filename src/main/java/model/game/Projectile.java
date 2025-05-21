@@ -6,34 +6,84 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import view.ColorPalette;
 
+import java.util.ArrayList;
+
 public class Projectile extends Entity{
     private Vector2 position;
     private Vector2 velocity;
     private float timeAlive;
+    private final float initialSpeed;
+    private float radius;
+    private float damage;
 
-    public Projectile(Vector2 position, Vector2 velocity) {
-        this.position = position;
-        this.velocity = velocity;
+    public Projectile(ProjectileType type, Vector2 position, Vector2 velocity) {
+        this.position = position.cpy();
+        this.velocity = velocity.cpy();
         timeAlive = 0;
+
+        radius = type.radius;
+        initialSpeed = type.initialVelocity;
+        this.velocity.setLength(initialSpeed);
+        damage = type.damage;
     }
 
     @Override
     public void render(ShapeRenderer renderer) {
+        Vector2 perpendicular = velocity.cpy().rotate90(-1).nor();
+        Vector2 p1, p2, p3;
+
+        p1 = position.cpy().add(perpendicular.cpy().scl(3f));
+        p2 = position.cpy().add(perpendicular.cpy().scl(-3f));
+
+        float tmp = velocity.len() / initialSpeed;
+        p3 = position.cpy().sub(velocity.cpy().setLength(tmp * ((((-1 / (timeAlive + 0.1f)) / 10) + 1) * 20)));
+
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(ColorPalette.RED);
         renderer.circle(position.x, position.y, 3);
+        renderer.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
         renderer.end();
+
     }
 
     @Override
     public void update(float delta) {
         timeAlive += delta;
-        if(velocity.len() < 10){
+        if(velocity.len() < 30){
             delete();
+            new AnimationEffect(AnimationEffectType.HIT_IMPACT, position, true);
             return;
         }
-        this.velocity.setLength(((1 / (timeAlive / 2.6f + 0.1f)) - 0.001f) * 64);
+        this.velocity.setLength(((1 / (timeAlive / 1.1f + 0.1f)) - 0.2f) * initialSpeed);
 
         this.position.add(velocity.cpy().scl(delta));
+
+        ArrayList<Monster> monsters = Game.activeGame.entities.getEntitiesOfType(Monster.class);
+        for(Monster m : monsters){
+            Vector2 monsterPos = m.getPosition();
+            Vector2 monsterSize = m.getSize();
+
+            if(((position.x > monsterPos.x) && (position.x < monsterPos.x + monsterSize.x)) &&
+                    ((position.y > monsterPos.y) && (position.y < monsterPos.y + monsterSize.y))){
+                byte[][] collider = m.getCollider();
+
+                Vector2 relPos = new Vector2(position.x - monsterPos.x,(monsterPos.y + monsterSize.y) - position.y);
+
+                for(int i = 0 ; i < collider.length; i++){
+                    for(int j = 0; j < collider[0].length; j++){
+                        if((collider[i][j] == 1) && relPos.dst(j, i) < radius){
+                            this.delete();
+                            new AnimationEffect(AnimationEffectType.HIT_IMPACT, position, true);
+                            m.projectileHit(this);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public float getDamage() {
+        return damage;
     }
 }

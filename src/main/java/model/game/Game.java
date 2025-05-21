@@ -14,15 +14,16 @@ import model.ConstantNames;
 import java.util.ArrayList;
 
 public class Game {
-    private Player player;
-    private OrthographicCamera camera;
+    public final Player player;
+    public final OrthographicCamera camera;
     public static ShapeRenderer shapeRenderer;
-    private Texture groundTexture;
+    public final Texture groundTexture;
+    public final MonsterSpawner monsterSpawner = new MonsterSpawner();
     static Vector3 pointerLocation = new Vector3();
-
     public EntityList entities = new EntityList();
     public ArrayList<Entity> entitiesToAdd = new ArrayList<>();
     public ArrayList<Entity> entitiesToDelete = new ArrayList<>();
+    public float playTime = 0;
 
 
     public static Game activeGame;
@@ -33,6 +34,8 @@ public class Game {
         player = new Player(Character.SHANA);
         camera = new OrthographicCamera();
         shapeRenderer = new ShapeRenderer();
+
+        new Monster(new Vector2(0, 30), MonsterType.BRAIN_MONSTER);
 
         camera.setToOrtho(false, Gdx.graphics.getWidth() / 3.2f, Gdx.graphics.getHeight() / 3.2f);
 
@@ -65,32 +68,40 @@ public class Game {
         }
 
         player.render(batch);
+        for(Monster m : entities.getEntitiesOfType(Monster.class)){
+            m.render(batch);
+        }
+        for(AnimationEffect e : entities.getEntitiesOfType(AnimationEffect.class)){
+            e.render(batch);
+        }
         batch.end();
-
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         for(Projectile e : entities.getEntitiesOfType(Projectile.class)){
             e.render(shapeRenderer);
         }
-        shapeRenderer.end();
+        player.render(shapeRenderer);
     }
     public void update(float delta){
+        playTime += delta;
         for (Entity e : entities){
             e.update(delta);
         }
+        monsterSpawner.update(delta);
+
         for(Entity e : entitiesToAdd){
             entities.add(e);
-            e.update(delta);
         }
         for (Entity e : entitiesToDelete){
             entities.remove(e);
         }
 
+
         entitiesToAdd.clear();
         entitiesToDelete.clear();
 
-        camera.position.set(player.getPosition().x + player.getSize().x / 2,
-                player.getPosition().y + player.getSize().y / 2, camera.position.z);
+        Vector2 movement = player.getPosition().cpy().add(player.getSize().cpy().scl(0.5f)).sub(new Vector2(camera.position.x, camera.position.y)).scl(0.20f);
+        camera.position.add(movement.x*delta* movement.len() , movement.y*delta*movement.len(), 0);
 
         pointerLocation.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(pointerLocation);

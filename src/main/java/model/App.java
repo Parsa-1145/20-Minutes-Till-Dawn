@@ -25,12 +25,14 @@ public class App extends Game {
     public AppSettings settings = new AppSettings();
     public Skin skin;
     public AssetManager assetManager;
+    public BitmapFont defaultFont;
 
     public AccountManager accountManager = new AccountManager();
 
     @Override
     public void create() {
         skin = new Skin(Gdx.files.internal("assets/skin.json"));
+        defaultFont = skin.getFont("default");
 
         //i hate smoothened text. lets sharpen it
         ObjectMap<String, BitmapFont> fonts = skin.getAll(BitmapFont.class);
@@ -45,6 +47,10 @@ public class App extends Game {
         assetManager.load(ConstantNames.SHANA_ANIMATIONS, Texture.class);
         assetManager.load(ConstantNames.GRASS_TILE, Texture.class);
         assetManager.load(ConstantNames.REVOLVER_SPRITE, Texture.class);
+        assetManager.load(ConstantNames.BRAIN_MONSTER, Texture.class);
+        assetManager.load(ConstantNames.HIT_IMPACT_ANIM, Texture.class);
+        assetManager.load(ConstantNames.RELOAD_ANIM, Texture.class);
+        assetManager.load(ConstantNames.DEATH_ANIM, Texture.class);
 
 
         while(!assetManager.update()){
