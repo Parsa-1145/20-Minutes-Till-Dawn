@@ -231,6 +231,13 @@ public class MainMenuScreen implements Screen {
                 transitionOut(new ProfileMenuScreen());
             }
         });
+
+        settingsBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                transitionOut(new SettingsMenu());
+            }
+        });
     }
 
 }

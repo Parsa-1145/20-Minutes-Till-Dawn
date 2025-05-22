@@ -1,6 +1,7 @@
 package model.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +12,8 @@ import model.App;
 import model.ConstantNames;
 import model.game.monsters.Monster;
 import model.game.monsters.MonsterType;
+import org.lwjgl.opengl.GL32;
+import view.ColorPalette;
 
 import java.util.ArrayList;
 
@@ -79,6 +82,23 @@ public class Game {
         Float musicIntensity = App.getMusicManager().getIntensity(0);
         App.getSkin().getFont("default").draw(batch, musicIntensity.toString(), 10, 10);
         batch.end();
+
+        // 2. Draw dark overlay
+        Gdx.gl.glEnable(GL32.GL_BLEND);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(ColorPalette.SHADOW);
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // blackPixelTexture is just a 1x1 black pixel texture
+        shapeRenderer.end();
+
+        // 3. Draw lights using additive blending
+        Gdx.gl.glBlendFunc(GL32.GL_SRC_ALPHA, GL32.GL_ONE); // Additive
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 1f, 1f, 0.3f); // Full white
+        shapeRenderer.circle(300, 300, 128);
+        shapeRenderer.end();
+
+        // 4. Reset blend function if needed
+        Gdx.gl.glDisable(GL32.GL_BLEND);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         for(Projectile e : entities.getEntitiesOfType(Projectile.class)){

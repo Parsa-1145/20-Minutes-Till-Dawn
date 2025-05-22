@@ -2,6 +2,7 @@ package model;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -84,6 +85,10 @@ public class App extends Game {
 
     @Override
     public void render() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F1)){
+            settings.debugSettings.debug = !settings.debugSettings.debug;
+        }
+
         Gdx.gl.glClearColor(ColorPalette.BACKGROUND.r, ColorPalette.BACKGROUND.g,
                             ColorPalette.BACKGROUND.b, ColorPalette.BACKGROUND.a);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
