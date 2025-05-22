@@ -12,6 +12,6 @@ public class MainMenuController{
         Gdx.app.exit();
     }
     public void logout(){
-        App.getInstance().accountManager.setCurrentAccount(null);
+        App.getAccountManager().setCurrentAccount(null);
     }
 }

@@ -8,7 +8,7 @@ import model.ConstantNames;
 import model.TextureUtilities;
 
 public enum Character {
-    SHANA(App.getInstance().assetManager.get(ConstantNames.SHANA_ANIMATIONS), "Shana")
+    SHANA(App.getAssetManager().get(ConstantNames.SHANA_ANIMATIONS), "Shana")
     ;
 
     public final Animation<TextureRegion> idleAnimation;

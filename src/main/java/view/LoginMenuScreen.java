@@ -40,22 +40,22 @@ public class LoginMenuScreen implements Screen {
         mainBox = new Table();
         mainBox.pack();
 
-        backButton = new MainMenuButton("back", App.getInstance().skin);
+        backButton = new MainMenuButton("back", App.getSkin());
         backButton.setScaleAnimation(false);
-        submitButton = new MainMenuButton("submit", App.getInstance().skin);
+        submitButton = new MainMenuButton("submit", App.getSkin());
         submitButton.setScaleAnimation(false);
 
-        usernameTextField = new ValidatedTextField(App.getInstance().skin, new NonEmptyValidator());
-        passwordTextField = new ValidatedTextField(App.getInstance().skin, new NonEmptyValidator());
+        usernameTextField = new ValidatedTextField(App.getSkin(), new NonEmptyValidator());
+        passwordTextField = new ValidatedTextField(App.getSkin(), new NonEmptyValidator());
 
         backButton.getLabel().setFontScale(1.1f);
         submitButton.getLabel().setFontScale(1.1f);
 
         mainBox.defaults().pad(5, 0, 5, 0).space(10).fill();
         mainBox.add(backButton).left().fill(false).colspan(2).row();
-        mainBox.add(new Label("username" ,App.getInstance().skin)).top().fill(true, false);
+        mainBox.add(new Label("username" ,App.getSkin())).top().fill(true, false);
         mainBox.add(usernameTextField).width(300).row();
-        mainBox.add(new Label("password" ,App.getInstance().skin)).top().fill(true, false);
+        mainBox.add(new Label("password" ,App.getSkin())).top().fill(true, false);
         mainBox.add(passwordTextField).width(300).row();
         mainBox.add(submitButton).colspan(2).center();
 
@@ -107,7 +107,7 @@ public class LoginMenuScreen implements Screen {
                         })
                 ));
 
-                Label successLabel = new Label(loginResult.message(), App.getInstance().skin);
+                Label successLabel = new Label(loginResult.message(), App.getSkin());
                 successLabel.setFontScale(2);
                 successLabel.setColor(ColorPalette.GREEN);
                 dialogueBox.add(successLabel);

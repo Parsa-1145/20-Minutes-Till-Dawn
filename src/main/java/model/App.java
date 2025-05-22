@@ -3,12 +3,14 @@ package model;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import model.audio.MusicManager;
 import org.lwjgl.opengl.GL;
 import view.ColorPalette;
 import view.MainMenuScreen;
@@ -28,6 +30,7 @@ public class App extends Game {
     public BitmapFont defaultFont;
 
     public AccountManager accountManager = new AccountManager();
+    public MusicManager musicManager = new MusicManager();
 
     @Override
     public void create() {
@@ -51,12 +54,25 @@ public class App extends Game {
         assetManager.load(ConstantNames.HIT_IMPACT_ANIM, Texture.class);
         assetManager.load(ConstantNames.RELOAD_ANIM, Texture.class);
         assetManager.load(ConstantNames.DEATH_ANIM, Texture.class);
-
+        assetManager.load(ConstantNames.SHOTGUN_SPRITE, Texture.class);
+        assetManager.load(ConstantNames.DUAL_SMG_SPRITE, Texture.class);
+        assetManager.load(ConstantNames.SELECTOR_BUBBLE, Texture.class);
+        assetManager.load(ConstantNames.CURSOR, Texture.class);
 
         while(!assetManager.update()){
 
         }
 
+        musicManager.load();
+
+        Texture cursorTexture = assetManager.get(ConstantNames.CURSOR, Texture.class);
+        if(!cursorTexture.getTextureData().isPrepared()){
+            cursorTexture.getTextureData().prepare();
+        }
+        Pixmap cursorPixmap = cursorTexture.getTextureData().consumePixmap();
+        Gdx.graphics.setCursor(Gdx.graphics.newCursor(cursorPixmap, cursorPixmap.getWidth()/2, cursorPixmap.getHeight()/2));
+
+        accountManager.setCurrentAccount(accountManager.getAccountByUsername("parsa"));
         setScreen(new MainMenuScreen());
     }
 
@@ -83,4 +99,27 @@ public class App extends Game {
         screen.pause();
     }
 
+    public static AssetManager getAssetManager() {
+        return instance.assetManager;
+    }
+
+    public static BitmapFont getDefaultFont() {
+        return instance.defaultFont;
+    }
+
+    public static AccountManager getAccountManager() {
+        return instance.accountManager;
+    }
+
+    public static MusicManager getMusicManager() {
+        return instance.musicManager;
+    }
+
+    public static AppSettings getSettings() {
+        return instance.settings;
+    }
+
+    public static Skin getSkin() {
+        return instance.skin;
+    }
 }

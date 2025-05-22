@@ -50,7 +50,6 @@ public class Monster extends Entity{
 
         center.set(position.x + size.x / 2, position.y + size.y / 2);
 
-        acceleration.set(0, 0);
 
         for(Monster m : Game.activeGame.entities.getEntitiesOfType(Monster.class)){
             if(m != this){
@@ -69,6 +68,7 @@ public class Monster extends Entity{
             this.position.add(velocity.cpy().scl(delta));
         }
 
+        acceleration.set(0, 0);
 
     }
 
@@ -111,6 +111,8 @@ public class Monster extends Entity{
     public void projectileHit(Projectile projectile){
         this.health -= projectile.getDamage();
         damagedTime = 0.1f;
+
+        this.velocity.add(projectile.getVelocity().cpy().setLength(projectile.getRadius() * 20));
 
         if(this.health < 0) {
             this.delete();

@@ -41,14 +41,14 @@ public class SignUpMenuScreen implements Screen {
         mainBox.center();
         mainBox.pack();
         mainBox.setWidth(300);
-        mainBox.setDebug(App.getInstance().settings.debugSettings.debug);
+        mainBox.setDebug(App.getSettings().debugSettings.debug);
 
-        usernameTextField = new ValidatedTextField(App.getInstance().skin, new UsernameValidator());
-        passwordTextField = new ValidatedTextField(App.getInstance().skin, new PasswordValidator());
-        securityQuestionTextArea = new TextField("security question", App.getInstance().skin);
-        securityAnswerTextArea = new TextField("security answer", App.getInstance().skin);
-        backBtn = new MainMenuButton("back", App.getInstance().skin).setScaleAnimation(false);
-        submitButton = new MainMenuButton("submit", App.getInstance().skin).setScaleAnimation(false);
+        usernameTextField = new ValidatedTextField(App.getSkin(), new UsernameValidator());
+        passwordTextField = new ValidatedTextField(App.getSkin(), new PasswordValidator());
+        securityQuestionTextArea = new TextField("security question", App.getSkin());
+        securityAnswerTextArea = new TextField("security answer", App.getSkin());
+        backBtn = new MainMenuButton("back", App.getSkin()).setScaleAnimation(false);
+        submitButton = new MainMenuButton("submit", App.getSkin()).setScaleAnimation(false);
 
         backBtn.getLabel().setFontScale(1.1f);
         submitButton.getLabel().setFontScale(1.1f);
@@ -56,16 +56,16 @@ public class SignUpMenuScreen implements Screen {
         mainBox.defaults().pad(5, 0, 5, 0).space(10).fill();
         mainBox.add(backBtn).colspan(2).left().fill(false);
         mainBox.row();
-        mainBox.add(new Label("username", App.getInstance().skin));
+        mainBox.add(new Label("username", App.getSkin()));
         mainBox.add(usernameTextField).width(300);
         mainBox.row();
-        mainBox.add(new Label("password", App.getInstance().skin));
+        mainBox.add(new Label("password", App.getSkin()));
         mainBox.add(passwordTextField).width(300);
         mainBox.row();
-        mainBox.add(new Label("security question", App.getInstance().skin));
+        mainBox.add(new Label("security question", App.getSkin()));
         mainBox.add(securityQuestionTextArea).width(300);
         mainBox.row();
-        mainBox.add(new Label("security answer", App.getInstance().skin));
+        mainBox.add(new Label("security answer", App.getSkin()));
         mainBox.add(securityAnswerTextArea).width(300);
         mainBox.row();
         mainBox.add(submitButton).colspan(2);
@@ -74,7 +74,7 @@ public class SignUpMenuScreen implements Screen {
         dialogueBox.center();
         dialogueBox.pack();
         dialogueBox.setWidth(300);
-        dialogueBox.setDebug(App.getInstance().settings.debugSettings.debug);
+        dialogueBox.setDebug(App.getSettings().debugSettings.debug);
 
         rootTable.add(mainBox);
 
@@ -116,7 +116,7 @@ public class SignUpMenuScreen implements Screen {
                         })
                 ));
 
-                Label successLabel = new Label(signUpResult.message(), App.getInstance().skin);
+                Label successLabel = new Label(signUpResult.message(), App.getSkin());
                 successLabel.setFontScale(2);
                 successLabel.setColor(ColorPalette.GREEN);
                 dialogueBox.add(successLabel);

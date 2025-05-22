@@ -11,7 +11,7 @@ public class LoginMenuController {
     }
 
     public Result submitLogin(String username, String password){
-        Account account = App.getInstance().accountManager.getAccountByUsername(username);
+        Account account = App.getAccountManager().getAccountByUsername(username);
         if(account == null){
             return new Result(false, "username not found");
         }
@@ -20,7 +20,7 @@ public class LoginMenuController {
             return new Result(false, "incorrect password");
         }
 
-        App.getInstance().accountManager.setCurrentAccount(account);
+        App.getAccountManager().setCurrentAccount(account);
         return new Result(true, "logged in as " + username);
     }
 }

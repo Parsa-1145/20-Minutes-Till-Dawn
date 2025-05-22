@@ -25,6 +25,7 @@ public class AppSettings {
     }
     public static class GamePlay{
         public boolean autoReload = true;
+        public boolean autoAim = true;
     }
     public static class Graphics{
         public boolean blackAndWhite = false;

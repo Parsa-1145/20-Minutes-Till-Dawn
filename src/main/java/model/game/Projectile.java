@@ -32,15 +32,15 @@ public class Projectile extends Entity{
         Vector2 perpendicular = velocity.cpy().rotate90(-1).nor();
         Vector2 p1, p2, p3;
 
-        p1 = position.cpy().add(perpendicular.cpy().scl(3f));
-        p2 = position.cpy().add(perpendicular.cpy().scl(-3f));
+        p1 = position.cpy().add(perpendicular.cpy().scl(radius));
+        p2 = position.cpy().add(perpendicular.cpy().scl(-radius));
 
         float tmp = velocity.len() / initialSpeed;
         p3 = position.cpy().sub(velocity.cpy().setLength(tmp * ((((-1 / (timeAlive + 0.1f)) / 10) + 1) * 20)));
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(ColorPalette.RED);
-        renderer.circle(position.x, position.y, 3);
+        renderer.circle(position.x, position.y, radius);
         renderer.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
         renderer.end();
 
@@ -60,6 +60,7 @@ public class Projectile extends Entity{
 
         ArrayList<Monster> monsters = Game.activeGame.entities.getEntitiesOfType(Monster.class);
         for(Monster m : monsters){
+            if(m.deleted) continue;
             Vector2 monsterPos = m.getPosition();
             Vector2 monsterSize = m.getSize();
 
@@ -81,6 +82,14 @@ public class Projectile extends Entity{
                 }
             }
         }
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public float getRadius() {
+        return radius;
     }
 
     public float getDamage() {

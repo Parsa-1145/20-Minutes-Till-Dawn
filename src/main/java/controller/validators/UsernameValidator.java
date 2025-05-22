@@ -9,7 +9,7 @@ public class UsernameValidator implements Validator<String>{
         if(username.isEmpty()){
             return new Result(false, "should not be empty");
         }
-        if(App.getInstance().accountManager.getAccountByUsername(username) != null){
+        if(App.getAccountManager().getAccountByUsername(username) != null){
             return new Result(false, "username exists");
         }
         return new Result(true, "");

@@ -13,7 +13,7 @@ public class SignUpMenuController {
 
     public Result submitSignup(String username, String password){
         Account account = new Account(username, password);
-        App.getInstance().accountManager.addAccount(account);
+        App.getAccountManager().addAccount(account);
 
         return new Result(true, "account created successfully");
     }

@@ -30,6 +30,7 @@ public class Weapon extends Entity{
     private TextureRegion currentFrame;
     private float animState = 0;
     private boolean flipped = false;
+    private int currentMuzzleIndex = 0;
 
     public Weapon(WeaponType type){
         this.type = type;
@@ -62,9 +63,16 @@ public class Weapon extends Entity{
 
     @Override
     public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.circle(muzzleLocation.x, muzzleLocation.y, 2);
-        shapeRenderer.end();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.circle(muzzleLocation.x, muzzleLocation.y, 2);
+//        shapeRenderer.end();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.rect(position.x, position.y,
+//                type.origin.x, type.origin.y,
+//                size.x, size.y,
+//                1, flipped ? -1 : 1,
+//                angle);
+//        shapeRenderer.end();
     }
 
     @Override
@@ -92,7 +100,6 @@ public class Weapon extends Entity{
                 }else{
                     currentFrame = type.reloadAnim.getKeyFrame(animState);
                 }
-
             }
         }
     }
@@ -125,21 +132,27 @@ public class Weapon extends Entity{
     public void fire(){
         if(cooldown > 0) return;
 
-        if(ammo == 0) return;
+        if(ammo <= 0) return;
 
+        Vector2 baseMuzzleLocation = type.muzzleLocation[currentMuzzleIndex];
+        currentMuzzleIndex++;
+        currentMuzzleIndex %= type.muzzleLocation.length;
 
         if(flipped) {
-            muzzleLocation = position.cpy().add((new Vector2(type.muzzleLocation.x, size.y - type.muzzleLocation.y))
+            muzzleLocation = position.cpy().add((new Vector2(baseMuzzleLocation.x, type.origin.y*2 - baseMuzzleLocation.y))
                     .rotateAroundDeg(type.origin,angle));
         }else{
-            muzzleLocation = position.cpy().add(type.muzzleLocation.cpy().rotateAroundDeg(type.origin,angle));
+            muzzleLocation = position.cpy().add(baseMuzzleLocation.cpy().rotateAroundDeg(type.origin,angle));
         }
 
-        Vector2 direction = new Vector2(1, 0).rotateDeg(angle + random.nextInt(-5, 6));
-        Projectile projectile = new Projectile(type.projectileType,
-                                muzzleLocation.cpy(),
-                                direction);
-        ammo--;
+        for(int i = 0 ; i < type.baseProjectileCount; i++){
+            Vector2 direction = new Vector2(1, 0).rotateDeg(angle + random.nextFloat(-type.spread, type.spread));
+            Projectile projectile = new Projectile(type.projectileType,
+                                    muzzleLocation.cpy(),
+                                    direction);
+        }
         cooldown = type.fireDelay;
+        ammo--;
+
     }
 }

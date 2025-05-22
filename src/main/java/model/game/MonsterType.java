@@ -14,9 +14,9 @@ import java.util.Map;
 
 public enum MonsterType {
     BRAIN_MONSTER(TextureUtilities.getAnimation(
-            App.getInstance().assetManager.get(ConstantNames.BRAIN_MONSTER),
+            App.getAssetManager().get(ConstantNames.BRAIN_MONSTER),
             4, 1, 0, 0.15f, Animation.PlayMode.LOOP_PINGPONG),
-            "Brain Monster", 14),
+            "Brain Monster", 34),
     ;
     public final Animation<TextureRegion> walkAnimation;
     public final Animation<byte[][]> collider;

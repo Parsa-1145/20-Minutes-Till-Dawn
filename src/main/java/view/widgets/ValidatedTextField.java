@@ -135,4 +135,8 @@ public class ValidatedTextField extends WidgetGroup {
             }
         }
     }
+
+    public TextField getTextField() {
+        return textField;
+    }
 }

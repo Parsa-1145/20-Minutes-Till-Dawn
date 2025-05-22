@@ -39,9 +39,9 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(){
         stage = new Stage(new ScreenViewport());
 
-        backgroundLeft = new Image(App.getInstance().assetManager.get(ConstantNames.LEAVSBACKGROUND, Texture.class));
+        backgroundLeft = new Image(App.getAssetManager().get(ConstantNames.LEAVSBACKGROUND, Texture.class));
         {
-            TextureRegion region = new TextureRegion(App.getInstance().assetManager
+            TextureRegion region = new TextureRegion(App.getAssetManager()
                     .get(ConstantNames.LEAVSBACKGROUND, Texture.class));
             region.flip(true, false);
             region.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -60,6 +60,30 @@ public class MainMenuScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+
+        rootTable.getColor().a = 0;
+        rootTable.addAction(
+                Actions.sequence(
+                        Actions.delay(1.5f),
+                        Actions.fadeIn(1.5f, Interpolation.exp5)
+                )
+        );
+        backgroundRight.addAction(Actions.moveBy(backgroundRight.getWidth(), 0));
+        backgroundRight.getColor().a = 0;
+        backgroundRight.addAction(
+                Actions.parallel(
+                        Actions.moveBy(-backgroundRight.getWidth(), 0, 2f, Interpolation.exp5),
+                        Actions.fadeIn(1.6f, Interpolation.exp5)
+                )
+        );
+        backgroundLeft.addAction(Actions.moveBy(-backgroundLeft.getWidth(), 0));
+        backgroundLeft.getColor().a = 0;
+        backgroundLeft.addAction(
+                Actions.parallel(
+                        Actions.moveBy(backgroundLeft.getWidth(), 0, 2f, Interpolation.exp5),
+                        Actions.fadeIn(1.6f, Interpolation.exp5)
+                )
+        );
     }
 
     @Override
@@ -129,20 +153,20 @@ public class MainMenuScreen implements Screen {
         }
         rootTable = new Table();
         rootTable.setFillParent(true);
-        rootTable.setDebug(App.getInstance().settings.debugSettings.debug);
+        rootTable.setDebug(App.getSettings().debugSettings.debug);
 
         Table mainBox = new Table();
 
-        playBtn = new MainMenuButton("play", App.getInstance().skin);
-        loginBtn = new MainMenuButton("login", App.getInstance().skin);
-        signUpBtn = new MainMenuButton("sign up", App.getInstance().skin);
-        settingsBtn = new MainMenuButton("settings", App.getInstance().skin);
-        profileMenuBtn = new MainMenuButton("your profile", App.getInstance().skin);
-        logoutBtn = new MainMenuButton("logout", App.getInstance().skin);
-        exitBtn = new MainMenuButton("exit", App.getInstance().skin);
+        playBtn = new MainMenuButton("play", App.getSkin());
+        loginBtn = new MainMenuButton("login", App.getSkin());
+        signUpBtn = new MainMenuButton("sign up", App.getSkin());
+        settingsBtn = new MainMenuButton("settings", App.getSkin());
+        profileMenuBtn = new MainMenuButton("your profile", App.getSkin());
+        logoutBtn = new MainMenuButton("logout", App.getSkin());
+        exitBtn = new MainMenuButton("exit", App.getSkin());
 
 
-        logoImage = new Image(App.getInstance().assetManager.get(ConstantNames.LOGO, Texture.class));
+        logoImage = new Image(App.getAssetManager().get(ConstantNames.LOGO, Texture.class));
         logoImage.setScaling(Scaling.fill);
 
         mainBox.add(logoImage).size(logoImage.getWidth() * 2, logoImage.getHeight() * 2).row();
@@ -151,7 +175,7 @@ public class MainMenuScreen implements Screen {
         mainBox.row();
         mainBox.add(settingsBtn);
         mainBox.row();
-        if(App.getInstance().accountManager.getCurrentAccount() != null){
+        if(App.getAccountManager().getCurrentAccount() != null){
             mainBox.add(logoutBtn).row();
             mainBox.add(profileMenuBtn).row();
         }else{
@@ -198,6 +222,13 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 transitionOut(new GameScreen());
+            }
+        });
+
+        profileMenuBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                transitionOut(new ProfileMenuScreen());
             }
         });
     }

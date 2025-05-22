@@ -1,6 +1,7 @@
 package model.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import model.App;
 import model.ConstantNames;
+import model.audio.PeakedMusic;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,8 @@ public class Game {
     public static ShapeRenderer shapeRenderer;
     public final Texture groundTexture;
     public final MonsterSpawner monsterSpawner = new MonsterSpawner();
-    static Vector3 pointerLocation = new Vector3();
+    public Vector2 pointerLocation = new Vector2();
+    private Vector3 pointerLocation3 = new Vector3();
     public EntityList entities = new EntityList();
     public ArrayList<Entity> entitiesToAdd = new ArrayList<>();
     public ArrayList<Entity> entitiesToDelete = new ArrayList<>();
@@ -39,8 +42,10 @@ public class Game {
 
         camera.setToOrtho(false, Gdx.graphics.getWidth() / 3.2f, Gdx.graphics.getHeight() / 3.2f);
 
-        groundTexture = App.getInstance().assetManager.get(ConstantNames.GRASS_TILE);
+        groundTexture = App.getAssetManager().get(ConstantNames.GRASS_TILE);
         groundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+
+        App.getMusicManager().play(0);
     }
 
     public void render(SpriteBatch batch){
@@ -74,6 +79,8 @@ public class Game {
         for(AnimationEffect e : entities.getEntitiesOfType(AnimationEffect.class)){
             e.render(batch);
         }
+        Float musicIntensity = App.getMusicManager().getIntensity(0);
+        App.getSkin().getFont("default").draw(batch, musicIntensity.toString(), 10, 10);
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -81,6 +88,10 @@ public class Game {
             e.render(shapeRenderer);
         }
         player.render(shapeRenderer);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.circle(player.currentPos.x + player.getCenter().x, player.currentPos.y + player.getCenter().y, 5);
+        shapeRenderer.end();
+
     }
     public void update(float delta){
         playTime += delta;
@@ -100,11 +111,17 @@ public class Game {
         entitiesToAdd.clear();
         entitiesToDelete.clear();
 
-        Vector2 movement = player.getPosition().cpy().add(player.getSize().cpy().scl(0.5f)).sub(new Vector2(camera.position.x, camera.position.y)).scl(0.20f);
+        pointerLocation3.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(pointerLocation3);
+        pointerLocation.set(pointerLocation3.x, pointerLocation3.y);
+
+        Vector2 cameraPos = new Vector2(camera.position.x, camera.position.y);
+        Vector2 playerDist = player.getCenter().cpy().sub(cameraPos);
+        Vector2 cursorDist = pointerLocation.cpy().sub(cameraPos);
+        Vector2 movement = playerDist.scl(5).add(cursorDist).scl(0.05f);
+
         camera.position.add(movement.x*delta* movement.len() , movement.y*delta*movement.len(), 0);
 
-        pointerLocation.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(pointerLocation);
     }
 
     public void resize(int width, int height){

@@ -8,9 +8,9 @@ import model.ConstantNames;
 import model.TextureUtilities;
 
 public enum AnimationEffectType {
-    HIT_IMPACT(TextureUtilities.getAnimation(App.getInstance().assetManager.get(ConstantNames.HIT_IMPACT_ANIM, Texture.class),
+    HIT_IMPACT(TextureUtilities.getAnimation(App.getAssetManager().get(ConstantNames.HIT_IMPACT_ANIM, Texture.class),
             2, 1, 0, 0.08f, Animation.PlayMode.NORMAL)),
-    DEATH(TextureUtilities.getAnimation(App.getInstance().assetManager.get(ConstantNames.DEATH_ANIM, Texture.class),
+    DEATH(TextureUtilities.getAnimation(App.getAssetManager().get(ConstantNames.DEATH_ANIM, Texture.class),
             4, 1, 0, 0.08f, Animation.PlayMode.NORMAL))
     ;
     public final Animation<TextureRegion> animation;

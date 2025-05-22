@@ -21,5 +21,6 @@ public abstract class Entity {
             throw new RuntimeException("why would you delete something that is deleted you scum?(" + this.getClass().getSimpleName() + ")");
         }
         Game.activeGame.entitiesToDelete.add(this);
+        deleted = true;
     }
 }

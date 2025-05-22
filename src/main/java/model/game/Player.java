@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import model.App;
+
+import java.util.ArrayList;
 
 public class Player extends Entity{
     Animation<TextureRegion> currentAnim = null;
@@ -18,9 +21,14 @@ public class Player extends Entity{
     private Vector2 position;
     private Vector2 center;
     private Vector2 handPos;
+    public Vector2 targetPos;
+    public Vector2 currentPos;
     private float animState = 0;
     private Weapon weapon;
     private float speed = 64;
+    private int xp = 0;
+    private int level;
+    private int health;
 
     public Player(Character character){
         this.character = character;
@@ -28,8 +36,10 @@ public class Player extends Entity{
         velocity = new Vector2();
         center = new Vector2();
         size = new Vector2();
-        weapon = new Weapon(WeaponType.REVOLVER);
+        weapon = new Weapon(WeaponType.DUAL_SMG);
         handPos = new Vector2();
+        targetPos = new Vector2();
+        currentPos = new Vector2(1, 0);
         velocity.set(0, 0);
         currentAnim = character.idleAnimation;
     }
@@ -64,6 +74,8 @@ public class Player extends Entity{
             velocity.y = 1;
         }if(Gdx.input.isKeyPressed(Input.Keys.S)){
             velocity.y = -1;
+        }if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            App.getSettings().gamePlaySettings.autoAim = !App.getSettings().gamePlaySettings.autoAim;
         }
 
         if(velocity.len() != 0){
@@ -88,7 +100,44 @@ public class Player extends Entity{
 
         animState += delta;
 
-        handPos = (new Vector2(Game.pointerLocation.x, Game.pointerLocation.y)).sub(center).setLength(5);
+        targetPos = new Vector2(Game.activeGame.pointerLocation.x, Game.activeGame.pointerLocation.y).sub(center);
+
+        ArrayList<Monster> monsters = Game.activeGame.entities.getEntitiesOfType(Monster.class);
+        if(App.getSettings().gamePlaySettings.autoAim && monsters != null && !monsters.isEmpty()){
+            float minDist = position.dst(monsters.get(0).getCenter());
+            float minAngle = monsters.get(0).getCenter().cpy().sub(position).angleDeg(currentPos);
+            if(minAngle > 180) minAngle -= 180;
+            Monster closestMonster = monsters.get(0);
+            Monster closestMonsterAngle = monsters.get(0);
+
+            for (Monster m : monsters) {
+                if(position.dst(m.getCenter()) < minDist){
+                    minDist = position.dst(m.getCenter());
+                    closestMonster = m;
+                }
+                float angle = m.getCenter().cpy().sub(position).angleDeg(currentPos);
+                if(angle > 180) angle -= 180;
+                if(angle < minAngle){
+                    minAngle = angle;
+                    closestMonsterAngle = m;
+                }
+            }
+            if(minDist < 128){
+                targetPos = closestMonster.getCenter().cpy().sub(center);
+            }else{
+                targetPos = closestMonsterAngle.getCenter().cpy().sub(center);
+            }
+        }
+
+        float angleToTarget = targetPos.angleDeg(currentPos);
+        if(angleToTarget > 180) angleToTarget -= 360;
+        currentPos.setLength(targetPos.len());
+
+        if(currentPos.dst(targetPos) > 0.5){
+            currentPos.rotateDeg(angleToTarget * 5 * delta);
+        }
+
+        handPos = currentPos.cpy().setLength(5);
 
         weapon.getPosition().set(center).add(handPos).sub(weapon.getOrigin());
         weapon.setAngle(handPos.angleDeg());
