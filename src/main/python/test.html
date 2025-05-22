@@ -1,158 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Music Intensity Editor</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-    canvas { border: 1px solid #ccc; display: block; margin: 20px auto; }
-    #waveform { cursor: crosshair; }
-    #controls { margin: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Intensity Graph with Playback</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wavesurfer.js@7"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #waveform {
+            background: #f0f0f0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        #graph-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        #controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .playback-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .point-info {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #cursor-line {
+            position: absolute;
+            width: 1px;
+            background-color: red;
+            height: 100%;
+            top: 0;
+            pointer-events: none;
+            display: none;
+        }
+        .export-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Music Intensity Editor</h1>
-  <input type="file" accept="audio/mp3" id="audioInput">
-  <div id="controls">
-    <button id="playBtn" disabled>Play</button>
-    <button id="pauseBtn" disabled>Pause</button>
-    <button id="exportBtn" disabled>Export as CSV</button>
-  </div>
-  <canvas id="waveform" width="800" height="200"></canvas>
+    <h1>Audio Intensity Graph with Playback</h1>
+    
+    <div id="controls">
+        <input type="file" id="audio-upload" accept="audio/*">
+        <div class="playback-controls">
+            <button id="play-btn" disabled>Play</button>
+            <button id="pause-btn" disabled>Pause</button>
+            <button id="stop-btn" disabled>Stop</button>
+            <span>Volume:</span>
+            <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <button id="clear-points">Clear Points</button>
+        <button id="export-csv" class="export-btn" disabled>Export Points as CSV</button>
+    </div>
+    
+    <div id="waveform"></div>
+    
+    <div id="graph-container">
+        <div id="cursor-line"></div>
+        <canvas id="intensity-graph"></canvas>
+    </div>
+    
+    <div class="point-info">
+        <h3>Point Data</h3>
+        <table id="point-table">
+            <thead>
+                <tr>
+                    <th>Time (s)</th>
+                    <th>Intensity (0-1)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="point-data">
+                <!-- Point data will appear here -->
+            </tbody>
+        </table>
+    </div>
 
-  <script>
-    const canvas = document.getElementById('waveform');
-    const ctx = canvas.getContext('2d');
-    const audioInput = document.getElementById('audioInput');
-    const playBtn = document.getElementById('playBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const exportBtn = document.getElementById('exportBtn');
-
-    let audioBuffer, duration = 0, audioElement = null;
-    let points = [];
-    let animationId = null;
-
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    audioInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      // Load audio into HTMLAudioElement
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.remove();
-      }
-      audioElement = new Audio(URL.createObjectURL(file));
-      audioElement.controls = false;
-      audioElement.load();
-      audioElement.addEventListener('canplay', () => {
-        playBtn.disabled = false;
-        pauseBtn.disabled = false;
-        exportBtn.disabled = false;
-        duration = audioElement.duration;
-      });
-
-      // Decode audio for waveform
-      const arrayBuffer = await file.arrayBuffer();
-      audioCtx.decodeAudioData(arrayBuffer, buffer => {
-        audioBuffer = buffer;
-        duration = buffer.duration;
-        drawWaveform(buffer);
-      });
-    });
-
-    function drawWaveform(buffer) {
-      const raw = buffer.getChannelData(0);
-      const step = Math.floor(raw.length / canvas.width);
-      const amp = canvas.height / 2;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      for (let i = 0; i < canvas.width; i++) {
-        const segment = raw.slice(i * step, (i + 1) * step);
-        const min = Math.min(...segment);
-        const max = Math.max(...segment);
-        ctx.moveTo(i, (1 + min) * amp);
-        ctx.lineTo(i, (1 + max) * amp);
-      }
-      ctx.strokeStyle = '#000';
-      ctx.stroke();
-      drawPoints();
-    }
-
-    function drawPoints() {
-      for (const pt of points) {
-        const x = (pt.time / duration) * canvas.width;
-        const y = canvas.height - pt.intensity * canvas.height;
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'red';
-        ctx.fill();
-      }
-    }
-
-    function drawPlaybackPosition() {
-      if (!audioElement || audioElement.paused) return;
-
-      drawWaveform(audioBuffer);
-      const x = (audioElement.currentTime / duration) * canvas.width;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, canvas.height);
-      ctx.strokeStyle = 'blue';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      animationId = requestAnimationFrame(drawPlaybackPosition);
-    }
-
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const time = (x / canvas.width) * duration;
-      const intensity = 1 - (y / canvas.height);
-      points.push({ time, intensity: Math.max(0, Math.min(1, intensity)) });
-      drawWaveform(audioBuffer);
-    });
-
-    canvas.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const time = (x / canvas.width) * duration;
-      points = points.filter(p => Math.abs(p.time - time) > 0.5);
-      drawWaveform(audioBuffer);
-    });
-
-    playBtn.addEventListener('click', () => {
-      if (audioElement) {
-        audioElement.play();
-        cancelAnimationFrame(animationId);
-        drawPlaybackPosition();
-      }
-    });
-
-    pauseBtn.addEventListener('click', () => {
-      if (audioElement) {
-        audioElement.pause();
-        cancelAnimationFrame(animationId);
-        drawWaveform(audioBuffer); // remove playhead line
-      }
-    });
-
-    exportBtn.addEventListener('click', () => {
-      const sorted = points.sort((a, b) => a.time - b.time);
-      const csv = 'time,intensity\n' + sorted.map(p => `${p.time.toFixed(3)},${p.intensity.toFixed(2)}`).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'intensity.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-  </script>
+    <script>
+        // Global variables
+        let wavesurfer;
+        let audioContext;
+        let audioBuffer;
+        let chart;
+        let points = [];
+        let duration = 0;
+        let isPlaying = false;
+        let playStartTime = 0;
+        let animationFrameId = null;
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WaveSurfer
+            wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#4F4F4F',
+                progressColor: '#2D5B88',
+                cursorColor: '#1E1E1E',
+                cursorWidth: 1,
+                barWidth: 2,
+                barRadius: 3,
+                responsive: true,
+                height: 150,
+                normalize: true,
+                partialRender: true
+            });
+            
+            // Initialize Chart.js
+            const ctx = document.getElementById('intensity-graph').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Audio Waveform',
+                        borderColor: 'rgba(75, 192, 192, 0.8)',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        data: []
+                    }, {
+                        label: 'Intensity Points',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        pointRadius: 5,
+                        data: [],
+                        showLine: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Time (s)'
+                            },
+                            min: 0
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Intensity (0-1)'
+                            },
+                            min: 0,
+                            max: 1
+                        }
+                    },
+                    onClick: (e) => {
+                        if (audioBuffer && !isPlaying) {
+                            const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
+                            const xValue = chart.scales.x.getValueForPixel(canvasPosition.x);
+                            let yValue = chart.scales.y.getValueForPixel(canvasPosition.y);
+                            
+                            // Normalize yValue to 0-1 range
+                            yValue = Math.max(0, Math.min(1, yValue));
+                            
+                            // Ensure point is within bounds
+                            if (xValue >= 0 && xValue <= duration) {
+                                addPoint(xValue, yValue);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Set up file upload
+            document.getElementById('audio-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    loadAudioFile(file);
+                }
+            });
+            
+            // Playback controls
+            document.getElementById('play-btn').addEventListener('click', playAudio);
+            document.getElementById('pause-btn').addEventListener('click', pauseAudio);
+            document.getElementById('stop-btn').addEventListener('click', stopAudio);
+            document.getElementById('volume').addEventListener('input', function(e) {
+                if (wavesurfer) {
+                    wavesurfer.setVolume(e.target.value);
+                }
+            });
+            
+            // Clear points button
+            document.getElementById('clear-points').addEventListener('click', function() {
+                points = [];
+                updateChart();
+                updatePointTable();
+                document.getElementById('export-csv').disabled = true;
+            });
+            
+            // Export CSV button
+            document.getElementById('export-csv').addEventListener('click', exportToCSV);
+            
+            // WaveSurfer events
+            wavesurfer.on('ready', function() {
+                document.getElementById('play-btn').disabled = false;
+                document.getElementById('pause-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = false;
+            });
+            
+            wavesurfer.on('play', function() {
+                isPlaying = true;
+                playStartTime = Date.now() - (wavesurfer.getCurrentTime() * 1000);
+                updatePlaybackCursor();
+            });
+            
+            wavesurfer.on('pause', function() {
+                isPlaying = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            });
+            
+            wavesurfer.on('finish', function() {
+                isPlaying = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                document.getElementById('cursor-line').style.display = 'none';
+            });
+        });
+        
+        // Load audio file and process it
+        function loadAudioFile(file) {
+            // Reset previous state
+            stopAudio();
+            points = [];
+            updateChart();
+            updatePointTable();
+            document.getElementById('export-csv').disabled = true;
+            
+            // Load new file
+            wavesurfer.loadBlob(file);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const audioData = e.target.result;
+                
+                // Create AudioContext
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Decode audio data
+                audioContext.decodeAudioData(audioData).then(function(buffer) {
+                    audioBuffer = buffer;
+                    duration = buffer.duration;
+                    
+                    // Update chart x-axis max to audio duration
+                    chart.options.scales.x.max = duration;
+                    
+                    // Process audio for chart
+                    processAudioForChart(buffer);
+                });
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Process audio data for the chart
+        function processAudioForChart(buffer) {
+            const sampleRate = buffer.sampleRate;
+            const channelData = buffer.getChannelData(0); // Use first channel
+            const totalSamples = channelData.length;
+            
+            // Calculate duration
+            duration = buffer.duration;
+            
+            // Downsample for better performance
+            const downsampleFactor = Math.ceil(totalSamples / 5000); // Show ~5000 points
+            const downsampledData = [];
+            
+            for (let i = 0; i < totalSamples; i += downsampleFactor) {
+                const time = i / sampleRate;
+                // Normalize amplitude to 0-1 range (original is -1 to 1)
+                const normalizedValue = (channelData[i] + 1) / 2;
+                downsampledData.push({
+                    x: time,
+                    y: normalizedValue
+                });
+            }
+            
+            // Update chart with waveform
+            chart.data.datasets[0].data = downsampledData;
+            chart.update();
+        }
+        
+        // Play audio
+        function playAudio() {
+            if (wavesurfer) {
+                wavesurfer.play();
+                document.getElementById('cursor-line').style.display = 'block';
+            }
+        }
+        
+        // Pause audio
+        function pauseAudio() {
+            if (wavesurfer) {
+                wavesurfer.pause();
+            }
+        }
+        
+        // Stop audio
+        function stopAudio() {
+            if (wavesurfer) {
+                wavesurfer.stop();
+                isPlaying = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                document.getElementById('cursor-line').style.display = 'none';
+            }
+        }
+        
+        // Update playback cursor position
+        function updatePlaybackCursor() {
+            if (!isPlaying) return;
+            
+            const currentTime = wavesurfer.getCurrentTime();
+            const canvas = document.getElementById('intensity-graph');
+            const xPos = chart.scales.x.getPixelForValue(currentTime);
+            
+            const cursorLine = document.getElementById('cursor-line');
+            cursorLine.style.left = xPos + 'px';
+            cursorLine.style.display = 'block';
+            
+            // Continue the animation
+            animationFrameId = requestAnimationFrame(updatePlaybackCursor);
+        }
+        
+        // Add a point to the graph
+        function addPoint(time, intensity) {
+            // Round to 3 decimal places
+            time = Math.round(time * 1000) / 1000;
+            intensity = Math.round(intensity * 1000) / 1000;
+            
+            points.push({ time, intensity });
+            updateChart();
+            updatePointTable();
+            document.getElementById('export-csv').disabled = false;
+        }
+        
+        // Remove a point
+        function removePoint(index) {
+            points.splice(index, 1);
+            updateChart();
+            updatePointTable();
+            document.getElementById('export-csv').disabled = points.length === 0;
+        }
+        
+        // Update chart with current points
+        function updateChart() {
+            chart.data.datasets[1].data = points.map(p => ({ x: p.time, y: p.intensity }));
+            chart.update();
+        }
+        
+        // Update the point data table
+        function updatePointTable() {
+            const tableBody = document.getElementById('point-data');
+            tableBody.innerHTML = '';
+            
+            points.forEach((point, index) => {
+                const row = document.createElement('tr');
+                
+                const timeCell = document.createElement('td');
+                timeCell.textContent = point.time.toFixed(3);
+                
+                const intensityCell = document.createElement('td');
+                intensityCell.textContent = point.intensity.toFixed(3);
+                
+                const actionCell = document.createElement('td');
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'Remove';
+                removeBtn.onclick = () => removePoint(index);
+                actionCell.appendChild(removeBtn);
+                
+                row.appendChild(timeCell);
+                row.appendChild(intensityCell);
+                row.appendChild(actionCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Export points to CSV
+        function exportToCSV() {
+            if (points.length === 0) return;
+            
+            // Create CSV content
+            let csvContent = "time,intensity\n";
+            points.forEach(point => {
+                csvContent += `${point.time.toFixed(3)},${point.intensity.toFixed(3)}\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'audio_points.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>

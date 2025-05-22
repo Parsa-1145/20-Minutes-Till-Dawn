@@ -1,29 +1,33 @@
-package model.game;
+package model.game.monsters;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import model.App;
+import model.game.*;
 
-public class Monster extends Entity{
+import java.util.ArrayList;
+
+public class Monster extends Entity {
     public MonsterType type;
     private float animState = 0;
-    private Vector2 position = new Vector2();
-    private Vector2 size = new Vector2();
-    private Vector2 velocity = new Vector2();
-    private Vector2 acceleration = new Vector2();
-    private Vector2 center = new Vector2();
+    Rectangle boundingBox = new Rectangle();
+    Vector2 velocity = new Vector2();
+    Vector2 acceleration = new Vector2();
+    ArrayList<Behaviour> behaviours = new ArrayList<>();
     private float health;
     private float damagedTime;
 
     public Monster(Vector2 position, MonsterType type) {
-        this.position = position;
+        this.boundingBox.setPosition(position);
         this.type = type;
-        center.set(position.x + size.x / 2, position.y + size.y / 2);
+
         health = type.baseHealth;
+        for(Behaviour b : type.behaviours){
+            this.behaviours.add(b.clone());
+        }
     }
 
     @Override
@@ -32,40 +36,38 @@ public class Monster extends Entity{
             batch.setColor(Color.GRAY);
         }
         TextureRegion frame = type.walkAnimation.getKeyFrame(animState);
-        size.set(frame.getRegionWidth(), frame.getRegionHeight());
-        batch.draw(frame, position.x, position.y, frame.getRegionWidth() / 2f, frame.getRegionHeight()/2f,
-                size.x, size.y, velocity.x < 0 ? -1 : 1, 1, 0);
+        boundingBox.setSize(frame.getRegionWidth(), frame.getRegionHeight());
+        batch.draw(frame, boundingBox.x, boundingBox.y, frame.getRegionWidth() / 2f, frame.getRegionHeight()/2f,
+                boundingBox.width, boundingBox.height, velocity.x < 0 ? -1 : 1, 1, 0);
         if(damagedTime > 0){
             batch.setColor(Color.WHITE);
         }
     }
 
     @Override
+    public void render(ShapeRenderer shapeRenderer) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height);
+        shapeRenderer.end();
+    }
+
+    @Override
     public void update(float delta) {
         animState += delta;
-        Player player = Game.activeGame.player;
+
         if(damagedTime > 0) damagedTime -= delta;
-
-        Vector2 playerCenter = player.getCenter();
-
-        center.set(position.x + size.x / 2, position.y + size.y / 2);
-
 
         for(Monster m : Game.activeGame.entities.getEntitiesOfType(Monster.class)){
             if(m != this){
-                Vector2 dist = this.position.cpy().sub(m.position);
-                if(dist.len() < m.size.len()/4 + this.size.len()/4 - 16){
+                Vector2 dist = getPosition().sub(m.getPosition());
+                if(dist.len() < m.getSize().len()/4 + this.getSize().len()/4 - 16){
                     this.acceleration.add(dist.setLength(128));
                 }
             }
         }
 
-        Vector2 dist = playerCenter.cpy().sub(center);
-        if(dist.len() > 10){
-            acceleration.add(dist.setLength(48));
-            velocity.add(acceleration.scl(delta));
-            velocity.clamp(0, 48);
-            this.position.add(velocity.cpy().scl(delta));
+        for (Behaviour b : behaviours) {
+            b.update(delta, this);
         }
 
         acceleration.set(0, 0);
@@ -73,11 +75,11 @@ public class Monster extends Entity{
     }
 
     public Vector2 getPosition() {
-        return position;
+        return boundingBox.getPosition(new Vector2());
     }
 
     public void setPosition(Vector2 position) {
-        this.position = position;
+        boundingBox.setPosition(position);
     }
 
     public Vector2 getVelocity() {
@@ -89,19 +91,15 @@ public class Monster extends Entity{
     }
 
     public Vector2 getCenter() {
-        return center;
-    }
-
-    public void setCenter(Vector2 center) {
-        this.center = center;
+        return boundingBox.getCenter(new Vector2());
     }
 
     public Vector2 getSize() {
-        return size;
+        return boundingBox.getSize(new Vector2());
     }
 
     public void setSize(Vector2 size) {
-        this.size = size;
+        this.boundingBox.setSize(size.x, size.y);
     }
 
     public byte[][] getCollider(){
@@ -116,7 +114,7 @@ public class Monster extends Entity{
 
         if(this.health < 0) {
             this.delete();
-            new AnimationEffect(AnimationEffectType.DEATH, this.center, true);
+            new AnimationEffect(AnimationEffectType.DEATH, getCenter(), true);
         }
     }
 }

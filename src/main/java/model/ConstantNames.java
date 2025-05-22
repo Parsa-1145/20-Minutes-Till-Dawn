@@ -7,6 +7,7 @@ public class ConstantNames {
     public static final String GRASS_TILE = "assets/Images/T_TileGrass.png";
     public static final String REVOLVER_SPRITE = "assets/Images/RevolverStill.png";
     public static final String BRAIN_MONSTER = "assets/Images/BrainMonster.png";
+    public static final String EYE_MONSTER = "assets/Images/EyeMonster.png";
     public static final String HIT_IMPACT_ANIM = "assets/Images/hitImpact.png";
     public static final String RELOAD_ANIM = "assets/Images/T_Gun_Reload.png";
     public static final String DEATH_ANIM = "assets/Images/T_DeathFX.png";

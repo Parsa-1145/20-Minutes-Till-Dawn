@@ -58,6 +58,7 @@ public class App extends Game {
         assetManager.load(ConstantNames.DUAL_SMG_SPRITE, Texture.class);
         assetManager.load(ConstantNames.SELECTOR_BUBBLE, Texture.class);
         assetManager.load(ConstantNames.CURSOR, Texture.class);
+        assetManager.load(ConstantNames.EYE_MONSTER, Texture.class);
 
         while(!assetManager.update()){
 

@@ -3,10 +3,10 @@ package model.game;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import model.App;
+import model.game.monsters.Monster;
+import model.game.monsters.MonsterType;
 
 import java.security.SecureRandom;
-import java.util.Map;
-import java.util.Random;
 
 public class MonsterSpawner {
     float spawnRate = 3;
@@ -18,7 +18,7 @@ public class MonsterSpawner {
     }
 
     public void update(float delta){
-        float newIntensity = App.getMusicManager().getIntensity(5);
+        float newIntensity = App.getMusicManager().getIntensity(6);
         if(musicIntensity < 0.8 && newIntensity > 0.8){
             spawnMonsters(10);
         }
@@ -39,7 +39,7 @@ public class MonsterSpawner {
             Vector2 spawnVector = new Vector2(spawnRadious, spawnRadious);
             Vector2 position = Game.activeGame.player.getPosition().cpy().add(spawnVector.rotateDeg(random.nextInt(360)));
 
-            Monster monster = new Monster(position, MonsterType.BRAIN_MONSTER);
+            Monster monster = new Monster(position, (random.nextFloat() > 0.7)? MonsterType.EYE_MONSTER : MonsterType.BRAIN_MONSTER);
         }
     }
 }

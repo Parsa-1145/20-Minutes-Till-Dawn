@@ -149,7 +149,7 @@ public class Weapon extends Entity{
             Vector2 direction = new Vector2(1, 0).rotateDeg(angle + random.nextFloat(-type.spread, type.spread));
             Projectile projectile = new Projectile(type.projectileType,
                                     muzzleLocation.cpy(),
-                                    direction);
+                                    direction, false);
         }
         cooldown = type.fireDelay;
         ammo--;

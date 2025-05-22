@@ -1,8 +1,6 @@
 package model.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import model.App;
 import model.ConstantNames;
-import model.audio.PeakedMusic;
+import model.game.monsters.Monster;
+import model.game.monsters.MonsterType;
 
 import java.util.ArrayList;
 
@@ -37,8 +36,6 @@ public class Game {
         player = new Player(Character.SHANA);
         camera = new OrthographicCamera();
         shapeRenderer = new ShapeRenderer();
-
-        new Monster(new Vector2(0, 30), MonsterType.BRAIN_MONSTER);
 
         camera.setToOrtho(false, Gdx.graphics.getWidth() / 3.2f, Gdx.graphics.getHeight() / 3.2f);
 
@@ -86,6 +83,9 @@ public class Game {
         shapeRenderer.setProjectionMatrix(camera.combined);
         for(Projectile e : entities.getEntitiesOfType(Projectile.class)){
             e.render(shapeRenderer);
+        }
+        for(Monster m : entities.getEntitiesOfType(Monster.class)){
+            m.render(shapeRenderer);
         }
         player.render(shapeRenderer);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
